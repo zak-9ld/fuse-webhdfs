@@ -10,6 +10,7 @@ from stat import S_IFDIR, S_IFLNK, S_IFREG
 from time import time
 import datetime
 import configparser
+from requests_kerberos import HTTPKerberosAuth
 
 cfg = configparser.ConfigParser()
 def write_default_config():
@@ -36,26 +37,7 @@ if not os.path.exists(os.environ['HOME'] + '/.config/webhdfs.ini'):
 cfg.read(os.environ['HOME'] + '/.config/webhdfs.ini')
 
 def get_auth():
-    username = password = None
-    try:
-        username, account, password = netrc().authenticators(cfg['DEFAULT']['HDFS_HOST'])
-    except (FileNotFoundError, NetrcParseError, TypeError):
-        pass
-    if not username:
-        username = cfg['DEFAULT'].get('HDFS_USERNAME', "")
-    if not password:
-        password = cfg['DEFAULT'].get('HDFS_PASSWORD', "")
-    if 'HDFS_USERNAME' in os.environ:
-        username = os.environ['HDFS_USERNAME']
-    else:
-        if not username:
-            username = input("HDFS Username: ")
-    if 'HDFS_PASSWORD' in os.environ:
-        password = os.environ['HDFS_PASSWORD']
-    else:
-        if not password:
-            password = getpass.getpass(prompt="HDFS Password: ")
-    return (username.lower(), password)
+    return HTTPKerberosAuth()
 
 uid_cache = dict()
 def owner_to_uid(owner):

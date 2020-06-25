@@ -2,3 +2,5 @@ fusepy
 urllib3
 six
 requests
+fuse-webhdfs
+requests-kerberos
